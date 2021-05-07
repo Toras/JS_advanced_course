@@ -13,6 +13,77 @@ const goods = [
   { title: 'Shoes', price: 250 },
 ];
 
+class Hamburger {
+    size
+    stuffing = []
+    topping = []
+
+    constructor(size, stuffing) {
+        this.size = size;
+        this.stuffing = stuffing;
+    }
+    // Добавить добавку 
+    addTopping(topping) {
+        this.topping.push(topping);
+    }
+    // Убрать добавку 
+    removeTopping(topping) { 
+        this.topping.splice(this.topping.indexOf(topping), 1);
+    }
+    // Получить список добавок 
+    getToppings(topping) {
+        return this.topping;
+    }
+    // Узнать размер гамбургера
+    getSize() { 
+        return this.size;
+    }
+    // Узнать начинку гамбургера 
+    getStuffing() {
+        return this.stuffing;
+    }
+    // Узнать цену 
+    calculatePrice() {
+        let sum = 0;
+        sum = (this.size == 'Маленький') ? 50 : 100;
+        for (let i in this.stuffing) {
+            switch (this.stuffing[i]) {
+                case 'С сыром': sum += 10; break;
+                case 'С салатом': sum += 20; break;
+                case 'С картофелем': sum += 15;
+            }
+        }
+        for (let i in this.topping) {
+            switch (this.topping[i]) {
+                case 'приправа': sum += 15; break;
+                case 'майонез': sum += 20;
+            }
+        }
+
+        return sum;
+    }
+    // Узнать калорийность
+    calculateCalories() {
+        let sum = 0;
+        sum = (this.size == 'Маленький') ? 20 : 40;
+        for (let i in this.stuffing) {
+            switch (this.stuffing[i]) {
+                case 'С сыром': sum += 20; break;
+                case 'С салатом': sum += 5; break;
+                case 'С картофелем': sum += 10;
+            }
+        }
+        for (let i in this.topping) {
+            switch (this.topping[i]) {
+                case 'приправа': sum += 0; break;
+                case 'майонез': sum += 5;
+            }
+        }
+
+        return sum;
+    }
+}
+
 class Product {
     id
     name
