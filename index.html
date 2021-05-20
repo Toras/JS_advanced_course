@@ -13,12 +13,21 @@
   <div id="app">
     <header>
       <div class="header-button">
-        <input v-model="query" type="text" class="header-input" placeholder="Найти товар..." />
-        <button class="cart-button" type="button">Корзина</button>
+        <div class="search-block">
+          <input type="text" class="header-input" placeholder="Найти товар..." />
+          <button v-on:click="searchButton" type="button">Найти</button>
+          <button v-on:click="clearSearchButton" type="button">X</button>
+        </div>
+        <button v-on:click="basketButton" class="cart-button" type="button">Корзина</button>
       </div>
     </header>
     <div class="basket">
-      <div class="basket-list"></div>
+      <div class="basket-list">
+        <div v-for="item in cartGoods" class="cart-item">
+          <p>{{ item.title }} {{ item.price }} {{ item.quantity }}</p>
+          <button class="cart-del-button" href="#" type="button"> X </button>
+        </div>
+      </div>
     </div>
     <main>
       <div class="goods-list">
