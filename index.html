@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title>eShop</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="script-vue.js"></script>
+  <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <header-button></header-button>
+      <!-- <div class="header-button">
+        <div class="search-block">
+          <input type="text" class="header-input" placeholder="Найти товар..." />
+          <button v-on:click="searchButton" type="button">Найти</button>
+          <button v-on:click="clearSearchButton" type="button">X</button>
+        </div>
+        <button v-on:click="basketButton" class="cart-button" type="button">Корзина</button>
+      </div> -->
+    </header>
+    <!-- <div class="basket">
+      <div class="basket-list">
+        <div v-for="item in cartGoods" class="cart-item">
+          <p>{{ item.title }} {{ item.price }} {{ item.quantity }}</p>
+          <button class="cart-del-button" href="#" type="button"> X </button>
+        </div>
+      </div>
+    </div> -->
+    <main>
+      <goods-list ref="goodsL"></goods-list>
+      <!-- <div class="goods-list">
+        <div v-for="item in filteredGoods" class="goods-item">
+          <div class="goods-item--body">
+            <img />
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.price }}</p>
+          </div>
+          <div class="goods-item--button">
+            <button class="add-button" href="#" type="button">{{ basketName }}</button>
+          </div>
+        </div>
+      </div> -->
+    </main>
+  </div>
+</body>
+
+</html>
