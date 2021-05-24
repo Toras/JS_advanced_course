@@ -1,0 +1,27 @@
+{
+  "name": "js_advanced_course",
+  "version": "1.0.0",
+  "description": "geekbrains js advanced course",
+  "main": "script-node.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-static": "^0.7.11"
+  },
+  "devDependencies": {
+    "moment": "^2.29.1"
+  },
+  "scripts": {
+    "start": "node script-node.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Toras/JS_advanced_course.git"
+  },
+  "author": "Efimov Pavel",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Toras/JS_advanced_course/issues"
+  },
+  "homepage": "https://github.com/Toras/JS_advanced_course#readme"
+}
