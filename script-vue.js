@@ -198,6 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
             isBasketOpen: false,
         },
 
+        methods: {
+            queryChange: function(queryNewValue) {
+                this.query = queryNewValue;
+                // this.$refs.goodsL.query = this.query;
+            },
+            isBasketChange: function(result) {
+                this.isBasketOpen = result[0];
+                this.goodsInCart = result[1].splice(0);
+            },
+        },
+
         components: {
             'HeaderButton': {
                 template: `
@@ -207,14 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
                       <button v-on:click="searchButton" type="button">Найти</button>
                       <button v-on:click="clearSearchButton" type="button">X</button>
                     </div>
-                    <button @click="isBasketOpen = !isBasketOpen" class="cart-button" type="button">Корзина</button>
+                    <button @click=basketButton class="cart-button" type="button">Корзина</button>
                 </div>
                 `,
                 props: {
-                    goodsInCart: {
-                        type: Array,
-                        default: () => []
-                    },
                     query: {
                         type: String,
                         default: ''
@@ -223,6 +230,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         type: Boolean
                     },
                 },
+                data() {
+                    return {
+                        // isBasketOpen: false,
+                        goodsInCart: [],
+                        // query: '',
+                    };
+                },
+
                 methods: {
                     fetchCartData(callback) {
                         makeGETRequest(`${baseUrl}${getBasketUrl}`, (data) => {
@@ -241,20 +256,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
         
                     basketButton() {
+                        //this.isBasketOpen = !this.isBasketOpen;
                         this.fetchCartData();
-                        this.isBasketOpen = !this.isBasketOpen;
+                        this.$emit('onisbasketchange', [!this.isBasketOpen, this.goodsInCart]);
+                        // this.$parent.isBasketOpen = this.isBasketOpen;
+                        // this.$parent.$children.Basket.isBasketOpen = this.isBasketOpen;
                     },
         
                     searchButton() {
-                        this.query = document.querySelector('.header-input').value;
-                        app.$refs.goodsL.fetchData();
+                        let query = document.querySelector('.header-input').value;
+                        this.$emit('onquerychange', query);
                     },
         
                     clearSearchButton() {
                         document.querySelector('.header-input').value = '';
-                        this.query = '';
+                        this.$emit('onquerychange', '');
                     },
                 },
+                mounted() {
+                    this.fetchCartData();
+                }
             },
             'Basket': {
                 template: `
@@ -267,34 +288,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 `,
+
                 props: {
                     goodsInCart: {
                         type: Array,
-                        default: () => []
-                    },
-                    qauery: {
-                        type: Boolean,
+                        //default: () => []
                     },
         
                     isBasketOpen: {
                         type: Boolean
                     }
                 },
+
                 // data() {
                 //     return {
-                //         goodsInCart: [],
-                //         query: '',
-                //         basketName: 'Добавить в корзину',
-                //         isBasketOpen: false,
+                //         goodsInCart: this.goodsInCart.default,
+                //         isBasketOpen: this.isBasketOpen.default,
                 //     };
                 // },
+
                 computed: {
-                    cartGoods() {
-                        const basketPlaceholder = document.querySelector('.basket');
-                        basketPlaceholder.style.display = this.isBasketOpen ? 'block' : 'none';
-                        return this.goodsInCart;
+                    cartGoods: {
+                        // const basketPlaceholder = document.querySelector('.basket');
+                        // basketPlaceholder.style.display = this.isBasketOpen ? 'block' : 'none';
+                        get: function(){
+                            return this.goodsInCart;
+                        },
+                        set: function(){}
+                    },
+                    openBasket: {
+                        get: function() {
+                            return this.isBasketOpen;
+                        },
+                        set: function(){}
                     }
-                }
+                },
             },
             'GoodsList': {
                 template: `
@@ -312,10 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 `,
                 props: {
-                    // goods: {
-                    //     type: Array,
-                    //     default: () => []
-                    // },
                     query: {
                         type: String,
                         default: ''
@@ -323,7 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 data() {
                     return {
-                        // query: '',
                         goods: [],
                         basketName: 'Добавить в корзину',
                         isBasketOpen: false,
@@ -347,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 computed: {
                     filteredGoods() {
-                        return this.goods.filter((product) => (new RegExp(this.query, 'i').test(product.title)))
+                        return this.goods.filter((product) => (new RegExp(this.query, 'i').test(product.title)));
                     }
                 },
                 mounted() {
