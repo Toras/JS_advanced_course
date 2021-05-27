@@ -173,6 +173,31 @@ class Basket {
     }
 };
 
+const renderGoodsItem = (title, price) => {
+  return `<div class="goods-item">
+            <div class="goods-item--body">
+                <img />
+                <h3>${title}</h3>
+                <p>${price}</p>
+            </div>
+            <div class="goods-item--button">
+                <button class="add-button" href="${baseUrl}${addToBasketUrl}" type="button">Добавить в корзину</button>
+            </div>
+          </div>`;
+};
+
+const renderBasketList = (title, price, quantity) => {
+    return `<div class="cart-item">
+                <p>${title} ${price} ${quantity}</p>
+                <button class="cart-del-button" href="${baseUrl}${removeFromBasketUrl}" type="button"> X </button>
+            </div>`;
+}
+
+const render = (placeholder, list, renderWorker) => {
+    placeholder.innerHTML = "";
+    list.map(item => placeholder.innerHTML += renderWorker(item.product_name, item.price, item.quantity));
+}
+
 const catalogPlaceholder = document.querySelector('.goods-list');
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -180,6 +205,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const curCatalog = new Catalog();
     await curCatalog.getProducts(`${baseUrl}${getListUrl}`);
     curCatalog.render(catalogPlaceholder);
+    const catalogDataJson = await fetch(`${baseUrl}${getListUrl}`);
+    let catalogData = await catalogDataJson.json();
+    catalogData = catalogData.map(item => new Product(item.id_product, item.product_name, item.price));
+    catalogData.map(item => catalogPlaceholder.innerHTML += item.render());
+    render(catalogPlaceholder, catalogData, renderGoodsItem);
 
     const basketBtnPlaceholder = document.querySelector('.cart-button');
 
@@ -193,6 +223,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         for (let i in basketData['contents']) {
             curBasket.addToBasket(new Product(basketData['contents'][i].id_product, basketData['contents'][i].product_name, basketData['contents'][i].price), basketData['contents'][i].quantity);
         }
+       // isBasketOpen ? render(basketPlaceholder, basketData["contents"], renderBasketList) : '';
         isBasketOpen ? curBasket.render(): '';
     })
 });
