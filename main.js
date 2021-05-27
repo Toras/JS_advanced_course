@@ -188,6 +188,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let catalogData = await catalogDataJson.json();
     catalogData = catalogData.map(item => new Product(item.id_product, item.product_name, item.price));
     catalogData.map(item => catalogPlaceholder.innerHTML += item.render());
+    render(catalogPlaceholder, catalogData, renderGoodsItem);
 
     const basketBtnPlaceholder = document.querySelector('.cart-button');
 
