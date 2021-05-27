@@ -52,6 +52,7 @@ const removeFromBasketUrl = '/removeFromBasket';
 
 
 document.addEventListener('DOMContentLoaded', () => {
+
     const app = new Vue({
         el: '#app',
         data: {
