@@ -115,6 +115,24 @@ class Product {
     }
 };
 
+class Catalog {
+    productsInCatalog
+
+    constructor () {
+        this.productsInCatalog = [];
+    }
+
+    async getProducts (url) {
+        const catalogDataJson = await fetch(url);//`${baseUrl}${getListUrl}`);
+        this.productsInCatalog = await catalogDataJson.json();
+        this.productsInCatalog = this.productsInCatalog.map(item => new Product(item.id_product, item.product_name, item.price));
+    }
+
+    render(catalogPlaceholder) {
+        this.productsInCatalog.map(item => catalogPlaceholder.innerHTML += item.render());
+    }
+}
+
 class Basket {
     productsInBasket = new Map();//{Продукт: количество}
     placeholder
@@ -184,6 +202,9 @@ const catalogPlaceholder = document.querySelector('.goods-list');
 
 document.addEventListener("DOMContentLoaded", async () => {
     let isBasketOpen = false;
+    const curCatalog = new Catalog();
+    await curCatalog.getProducts(`${baseUrl}${getListUrl}`);
+    curCatalog.render(catalogPlaceholder);
     const catalogDataJson = await fetch(`${baseUrl}${getListUrl}`);
     let catalogData = await catalogDataJson.json();
     catalogData = catalogData.map(item => new Product(item.id_product, item.product_name, item.price));
