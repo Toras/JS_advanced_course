@@ -1,5 +1,5 @@
 const makeGETRequest = (url, callback) => {
-    var xhr;
+    let xhr;
 
     if (window.XMLHttpRequest) {
         xhr = new XMLHttpRequest();
@@ -15,13 +15,41 @@ const makeGETRequest = (url, callback) => {
 
     xhr.open('GET', url, true);
     xhr.send();
-}
+};
 
-const baseUrl = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
-const getListUrl = '/catalogData.json';
-const getBasketUrl = '/getBasket.json';
-const addToBasketUrl = '/addToBasket.json';
-const removeFromBasketUrl = '/deleteFromBasket.json';
+const makePOSTRequest = (url, data, callback) => {
+    let xhr;
+
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            callback(xhr.responseText);
+        }
+    }
+
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+    xhr.send(data);
+};
+
+// const baseUrl = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
+// const getListUrl = '/catalogData.json';
+// const getBasketUrl = '/getBasket.json';
+// const addToBasketUrl = '/addToBasket.json';
+// const removeFromBasketUrl = '/deleteFromBasket.json';
+
+const baseUrl = '';
+const getListUrl = '/catalogData';
+const getBasketUrl = '/getBasket';
+const addToBasketUrl = '/addToBasket';
+const removeFromBasketUrl = '/removeFromBasket';
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -38,13 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
         methods: {
             queryChange: function(queryNewValue) {
                 this.query = queryNewValue;
-                // this.$refs.goodsL.query = this.query;
             },
             isBasketChange: function(result) {
                 this.isBasketOpen = result[0];
-                this.goodsInCart = result[1].splice(0);
+                this.goodsInCart = result[1].slice();
             },
-        },
+},
 
         components: {
             'HeaderButton': {
@@ -69,35 +96,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 data() {
                     return {
-                        // isBasketOpen: false,
                         goodsInCart: [],
-                        // query: '',
                     };
                 },
 
                 methods: {
                     fetchCartData(callback) {
                         makeGETRequest(`${baseUrl}${getBasketUrl}`, (data) => {
-                            data = (JSON.parse(data));
-                            this.goodsInCart = this.transformCartData(data);
+                            if (data != '[]') {
+                                data = (JSON.parse(data));
+                                this.goodsInCart = this.transformCartData(data);
+                            } else { this.goodsInCart = []; }
                         });
                     },
         
                     transformCartData(list) {
-                        return list.contents.map((item) => ({
-                            title: item.product_name,
+                        return list.map((item) => ({
+                            title: item.title,
                             price: item.price,
                             quantity: item.quantity,
-                            id: item.id_product
+                            id: item.title
                         }));
                     },
         
                     basketButton() {
-                        //this.isBasketOpen = !this.isBasketOpen;
                         this.fetchCartData();
                         this.$emit('onisbasketchange', [!this.isBasketOpen, this.goodsInCart]);
-                        // this.$parent.isBasketOpen = this.isBasketOpen;
-                        // this.$parent.$children.Basket.isBasketOpen = this.isBasketOpen;
                     },
         
                     searchButton() {
@@ -120,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="basket-list">
                       <div v-for="item in cartGoods" class="cart-item">
                         <p>{{ item.title }} {{ item.price }} {{ item.quantity }}</p>
-                        <button class="cart-del-button" href="#" type="button"> X </button>
+                        <button class="cart-del-button" href="#" @click="() => removeFromBasket(item)" type="button"> X </button>
                       </div>
                     </div>
                 </div>
@@ -128,8 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 props: {
                     goodsInCart: {
-                        type: Array,
-                        //default: () => []
+                        type: Array
                     },
         
                     isBasketOpen: {
@@ -137,17 +160,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 },
 
-                // data() {
-                //     return {
-                //         goodsInCart: this.goodsInCart.default,
-                //         isBasketOpen: this.isBasketOpen.default,
-                //     };
-                // },
+                methods: {
+                    removeFromBasket(item) {
+                        makePOSTRequest('/removeFromBasket', JSON.stringify(item), () => {
+                            console.log('removed product from cart:', item);
+                            app.$refs.headerL.fetchCartData();
+                        });
+                    },
+                },
 
                 computed: {
                     cartGoods: {
-                        // const basketPlaceholder = document.querySelector('.basket');
-                        // basketPlaceholder.style.display = this.isBasketOpen ? 'block' : 'none';
                         get: function(){
                             return this.goodsInCart;
                         },
@@ -171,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>{{ item.price }}</p>
                   </div>
                   <div class="goods-item--button">
-                    <button class="add-button" href="#" type="button">{{ basketName }}</button>
+                    <button class="add-button" href="#" @click="() => addToBasket(item)" type="button">{{ basketName }}</button>
                   </div>
                 </div>
                 </div>
@@ -201,8 +224,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         return list.map((item) => ({
                             title: item.product_name,
                             price: item.price,
-                            id: item.id_product
+                            quantity: 1,
+                            id: item.product_name
                         }));
+                    },
+                    addToBasket(item) {
+                        makePOSTRequest('/addToBasket', JSON.stringify(item), () => {
+                            console.log('added product to cart:', item);
+                            app.$refs.headerL.fetchCartData();
+                        });
                     },
                 },
                 computed: {
@@ -212,10 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 mounted() {
                     this.fetchData();
-                    // this.fetchCartData();
                 }
             }
-
         }
     })
-})
+});
