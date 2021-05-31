@@ -2,16 +2,26 @@
   "name": "js_advanced_course",
   "version": "1.0.0",
   "description": "geekbrains js advanced course",
-  "main": "script-node.js",
+  "private": true,
   "dependencies": {
+    "css-loader": "^5.2.6",
     "express": "^4.17.1",
-    "node-static": "^0.7.11"
+    "node-static": "^0.7.11",
+    "postcss": "^8.3.0"
   },
   "devDependencies": {
-    "moment": "^2.29.1"
+    "@babel/core": "^7.14.3",
+    "@babel/preset-env": "^7.14.2",
+    "babel-loader": "^8.2.2",
+    "moment": "^2.29.1",
+    "vue-loader": "^15.9.7",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0"
   },
   "scripts": {
-    "start": "node script-node.js"
+    "start": "node script-node.js",
+    "wbBuild": "webpack",
+    "wbWatch": "webpack --watch"
   },
   "repository": {
     "type": "git",
